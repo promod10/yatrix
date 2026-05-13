@@ -1,25 +1,25 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const json = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     fullname:{
         firstname:{
             type:String,
             required: true,
-            minlenght:[3, 'First name mus be atleast 3 characters long'],
+            minlength:[3, 'First name must be at least 3 characters long'],
         },
         lastname:{
             type:String,
             required: true,
-            minlenght:[3, 'Last name mus be atleast 3 characters long'],
+            minlength:[3, 'Last name must be at least 3 characters long'],
         }
     },
     email:{
         type:String,
         required: true,
         unique:true,
-        minlenght:[5, 'Email must be atleast 5 characters long'],
+        minlength:[5, 'Email must be at least 5 characters long'],
     },
     password:{
         type:String,
@@ -31,16 +31,25 @@ const userSchema = new mongoose.Schema({
     }
 })
 
+
+
 userSchema.methods.generateAuthToken = function() {
-    const token = JsonWebTokenError.sign({_id:this._id}, process.env.JWT_SECRET);
+    const token = jwt.sign({_id:this._id}, process.env.JWT_SECRET, { expiresIn: '24h' });
     return token;
 } 
 userSchema.methods.comparePassword = async function(password) {
     return await bcrypt.compare(password, this.password);
 } 
-userSchema.methods.hashPassword = async function(password) {
+
+
+// methods gives error that hashPassword is not a function, but statics works fine. So we will use statics for hashing password.
+// userSchema.methods.hashPassword = async function(password) {
+//     return await bcrypt.hash(password, 10);
+// }
+
+userSchema.statics.hashPassword = async function(password) {
     return await bcrypt.hash(password, 10);
-} 
+}
 
 const userModel = mongoose.model('user', userSchema);
 
