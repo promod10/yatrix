@@ -7,7 +7,7 @@ const blackListTokenModel = require('../models/blackListToken.model');
 module.exports.registerUser = async(req, res, next ) =>{
     const errors = validationResult(req);
     if (!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array});
+        return res.status(400).json({errors: errors.array()});
     }
     console.log(req.body);
 
@@ -28,7 +28,7 @@ module.exports.registerUser = async(req, res, next ) =>{
 module.exports.loginUser = async(req, res, next) =>{
     const errors = validationResult(req);
     if (!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array});
+        return res.status(400).json({errors: errors.array()});
     }
     const {email, password} = req.body;
 
@@ -52,9 +52,11 @@ module.exports.getUserProfile = async(req, res, next) =>{
 
 module.exports.logoutUser = async (req, res, next) => {
     res.clearCookie('token');
-    const token = req.cookies.token || req.headers.authorization.split(' ')[ 1 ];
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ];
 
-    await blackListTokenModel.create({ token });
+    if (token) {
+        await blackListTokenModel.create({ token });
+    }
 
     res.status(200).json({ message: 'Logged out' });
 

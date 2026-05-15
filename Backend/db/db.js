@@ -11,9 +11,9 @@ const DB_NAME = "yatrix";
 
 const connectToDb = async () => {
     try {
-        const connectionInstace = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
+        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
         console.log("Connected to DB Successfully!");
-        console.log(`\n MongoDB connected !! DB HOST: ${connectionInstace.connection.host}`);
+        console.log(`\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`);
         
     } catch (error) {
         console.log("MongoDB connection having problem", error);
